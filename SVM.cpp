@@ -4,8 +4,13 @@
 #include <array>
 #include <time.h>   
 #include <fstream>
+#include <cmath>
+#include <string>
+#include <sstream>
+#include <iostream>
+using namespace std;
 
-#define C 0.25
+#define C 0.0025
 #define tolerance 0.02
 
 void read_X(string x_file, double** x);
@@ -35,7 +40,7 @@ int main(int argc, char** argv)
 	double E[15];
 	//passes
 	int passes = 0;
-	int max_passes = 20;
+	int max_passes = 50;
 	
 	int i,j;
 	double L,H,theta;
@@ -56,6 +61,7 @@ int main(int argc, char** argv)
 	while(passes <max_passes)
 	{	
 		int num_changed_alphas = 0;
+		cout << passes<<endl;
 		for( i =0;i<15;i++)
 		{	
 			E[i] = f_x( i,x,y,a,b);
@@ -107,6 +113,15 @@ int main(int argc, char** argv)
 			passes =0;
 		}
 	}
+
+
+
+	for(i= 0;i<15;i++)
+	{
+		cout<<a[i]<<endl;
+	}
+
+
 
 	return 0;
 }
@@ -239,7 +254,7 @@ void read_X(string x_file, double** x){
         double x1, x2;
         char separator;
         cout<<i<<" ";
-        input >> x1  >> separator >> x2;
+        input >> x1  >> x2;
         x[i][0] = x1;
         x[i][1] = x2;
         cout << x[i][0] << ", " << x[i][1] << endl;
