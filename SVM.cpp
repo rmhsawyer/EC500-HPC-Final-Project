@@ -97,7 +97,6 @@ int main(int argc, char** argv)
 				{
 
 					theta = eta(x,i,j);
-
 					if(theta < 0)
 					{
 						a[j] =  a[j]- y[j]*(E[i]-E[j])/theta;
@@ -110,13 +109,9 @@ int main(int argc, char** argv)
 							num_changed_alphas = num_changed_alphas +1;
 
 						}
-
 					}
-
 				}
-	
 			}
-
 		}
 
 		if(num_changed_alphas ==0)
@@ -129,20 +124,20 @@ int main(int argc, char** argv)
 		}
 	}
 
-
+	double w_svm[2];
 
 	for(i= 0;i<15;i++)
 	{
+
+		w_svm[0]= w_svm[0] +a[i] * y[i]*x[i][0] ;
+		w_svm[1]= w_svm[1] +a[i] * y[i]*x[i][1] ;
 		cout<<a[i]<<endl;
 	}
 
-
+	cout<<w_svm[0]<<' '<<w_svm[1]<<endl;
 
 	return 0;
 }
-
-
-
 
 
 double f_x(int j, double** x, double* y, double* alpha, double b){
