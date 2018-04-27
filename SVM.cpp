@@ -10,7 +10,7 @@
 #include <iostream>
 using namespace std;
 
-#define C 0.0025
+#define C 0.25
 #define tolerance 0.02
 
 void read_X(string x_file, double** x);
@@ -44,6 +44,7 @@ int main(int argc, char** argv)
 	
 	int i,j;
 	double L,H,theta;
+	srand (time(NULL));
 
 	double **x;
 	double *y;
@@ -55,6 +56,12 @@ int main(int argc, char** argv)
 	    x[i] = new double [2];
 	}
 	
+	for(i= 0;i<15;i++)
+	{
+		a[i] = 0;
+		a_old[i] = 0;
+	}
+
 	read_X("generate_data/dataset_15.txt", x);
  	read_Y("generate_data/dataset_15_label.txt", y);
 
@@ -64,19 +71,27 @@ int main(int argc, char** argv)
 		cout << passes<<endl;
 		for( i =0;i<15;i++)
 		{	
-			E[i] = f_x( i,x,y,a,b);
-			if( (( y[i] * E[i]< -tolerance) && a[i] < C ) || (( y[i] * E[i]> tolerance) && a[i] >0 ) )
+			E[i] = f_x( i,x,y,a,b) - y[i];
+			if( ( y[i] * E[i]< -tolerance && a[i] < C ) || ( y[i] * E[i]> tolerance && a[i] >0 ) )
 			{
 				//randomly choose j != i
 				do{
-					srand(time(0));
-					j= rand() % 14;
-				}while(j !=i);
-				E[j] = f_x( j,x,y,a,b);
+					j= rand() % 15;
+				}while(j ==i);
+
+				E[j] = f_x( j,x,y,a,b) - y[j];
 				a_old[i] = a[i];
 				a_old[j] = a[j];
-				H = H_nequal(a,i,j);
-				L = L_nequal(a,i,j);
+				if(y[i] != y[j])
+				{
+					H = H_nequal(a,i,j);
+					L = L_nequal(a,i,j);
+				}
+				if(y[i] == y[j])
+				{
+					H = H_equal(a,i,j);
+					L = L_equal(a,i,j);
+				}
 
 				if(L != H)
 				{
@@ -90,7 +105,7 @@ int main(int argc, char** argv)
 
 						if(abs(a[j]-a_old[j])>=1e-5)
 						{
-							a[i]= a[i]+y[i]*y[j]*(a_old[j]-a[i]);
+							a[i]= a[i]+y[i]*y[j]*(a_old[j]-a[j]);
 							b = b_value(i,j,b,E,x,y,a,a_old);
 							num_changed_alphas = num_changed_alphas +1;
 
@@ -156,7 +171,8 @@ double L_nequal(double *alpha, int i, int j){
  }
  else
  {
-  return 0;
+  tmp = 0;
+  return tmp;
  }
 }
 
@@ -180,7 +196,8 @@ double L_equal(double *alpha, int i, int j){
  }
  else
  {
-  return 0;
+ 	tmp = 0;
+  return tmp;
  }
 }
 
