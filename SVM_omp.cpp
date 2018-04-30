@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <omp.h>
 using namespace std;
 
 #define C 1.6
@@ -79,6 +80,8 @@ int main(int argc, char** argv)
 	{	
 		int num_changed_alphas = 0;
 
+		#pragma omp parallel for
+		
 		for( i =0;i<15;i++)
 		{	
 			E[i] = f_x( i,x,y,a,b) - y[i];
@@ -133,7 +136,7 @@ int main(int argc, char** argv)
 			passes =0;
 		}
 	}
-
+	#pragma omp barrier
 	//Compute W
 	double w_svm[2];
 	printf("The calculated alphas are:\n");

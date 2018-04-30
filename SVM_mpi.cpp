@@ -14,6 +14,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <mpi.h>
 using namespace std;
 
 #define C 1.6
@@ -68,6 +69,24 @@ int main(int argc, char** argv)
 		a_old[i] = 0;
 	}
 
+	int world_size; // number of MPI processes
+    int world_rank; // rank of MPI process
+    char processor_name[MPI_MAX_PROCESSOR_NAME]; // name of processor
+    int name_len; // length of name string.
+
+
+    // Initialize MPI
+    MPI_Init(&argc, &argv);
+    
+    // Get the number of processes
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    
+    // Get the rank
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+  
+    // Get the name of the processor
+    MPI_Get_processor_name(processor_name, &name_len);
+
 	// read in data
 	printf("The data point coordinates are:\n");
 	read_X("generate_data/dataset_15.txt", x);
@@ -79,7 +98,7 @@ int main(int argc, char** argv)
 	{	
 		int num_changed_alphas = 0;
 
-		for( i =0;i<15;i++)
+		for( i =world_rank*(15-1)/world_size;i<(world_rank+1)*(15-1)/world_size;i++)
 		{	
 			E[i] = f_x( i,x,y,a,b) - y[i];
 			if( ( y[i] * E[i]< -tolerance && a[i] < C ) || ( y[i] * E[i]> tolerance && a[i] >0 ) )
@@ -133,6 +152,9 @@ int main(int argc, char** argv)
 			passes =0;
 		}
 	}
+
+	// Clean up
+    MPI_Finalize();
 
 	//Compute W
 	double w_svm[2];
