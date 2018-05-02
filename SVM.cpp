@@ -38,12 +38,15 @@ double b_value(int i, int j, double b, double* E, double** x, double* y, double*
 int main(int argc, char** argv)
 {
 	//we random generate 15 testing data points to run the code, each data point with label +1, -1 
+	int numofdata = 15;
 	double *a;
 	double *a_old;
-	a= new double [15];
-	a_old= new double [15];
+	a= new double [numofdata];
+	a_old= new double [numofdata];
 	double b=0;
-	double E[15];
+	double E[numofdata];
+	double *sum_b;
+	sum_b = new double[numofdata];
 	//passes
 	int passes = 0;
 	int max_passes = 100;
@@ -54,15 +57,15 @@ int main(int argc, char** argv)
 
 	double **x;
 	double *y;
-	x = new double *[15];
-	y = new double [15];
+	x = new double *[numofdata];
+	y = new double [numofdata];
 
-	for (i=0;i<15;i++)
+	for (i=0;i<numofdata;i++)
 	{
 	    x[i] = new double [2];
 	}
 	
-	for(i= 0;i<15;i++)
+	for(i= 0;i<numofdata;i++)
 	{
 		a[i] = 0;
 		a_old[i] = 0;
@@ -79,14 +82,14 @@ int main(int argc, char** argv)
 	{	
 		int num_changed_alphas = 0;
 
-		for( i =0;i<15;i++)
+		for( i =0;i<numofdata;i++)
 		{	
 			E[i] = f_x( i,x,y,a,b) - y[i];
 			if( ( y[i] * E[i]< -tolerance && a[i] < C ) || ( y[i] * E[i]> tolerance && a[i] >0 ) )
 			{
 				//randomly choose j != i
 				do{
-					j= rand() % 15;
+					j= rand() % numofdata;
 				}while(j ==i);
 
 				E[j] = f_x( j,x,y,a,b) - y[j];
@@ -117,6 +120,8 @@ int main(int argc, char** argv)
 							a[i]= a[i]+y[i]*y[j]*(a_old[j]-a[j]);
 							b = b_value(i,j,b,E,x,y,a,a_old);
 							num_changed_alphas = num_changed_alphas +1;
+										sum_b[i] = b;
+
 
 						}
 					}
@@ -137,10 +142,12 @@ int main(int argc, char** argv)
 	//Compute W
 	double w_svm[2];
 	printf("The calculated alphas are:\n");
-	for(i= 0;i<15;i++)
+	for(i= 0;i<numofdata;i++)
 	{
 		w_svm[0]= w_svm[0] +a[i] * y[i]*x[i][0] ;
 		w_svm[1]= w_svm[1] +a[i] * y[i]*x[i][1] ;
+
+
 
 		cout<<a[i]<<"  ";
 	}
@@ -148,10 +155,8 @@ int main(int argc, char** argv)
 	cout<<w_svm[0]<<' '<<w_svm[1]<<endl;
 
 	//Compute b
-	double b_svm;
-	b_svm = y[14] - (w_svm[0]*x[14][0]+w_svm[0]* x[14][1]);
-	printf("The calculated b is:\n");
-	cout<<b_svm<<endl;
+
+	cout<< b <<endl;
 
 	return 0;
 }
@@ -305,7 +310,6 @@ void read_Y(string y_file, double* y){
         cout<<i<<" ";
         input >> y1;
         y[i] = y1;
-
         cout << y[i] << endl;
     }
 }
