@@ -14,10 +14,11 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+
 using namespace std;
 
 #define C 1.6
-#define tolerance 0.01
+#define tolerance 0.01 
 
 void read_X(string x_file, double** x);
 void read_Y(string y_file, double* y);
@@ -38,7 +39,7 @@ double b_value(int i, int j, double b, double* E, double** x, double* y, double*
 int main(int argc, char** argv)
 {
 	//we random generate 15 testing data points to run the code, each data point with label +1, -1 
-	int numofdata = 15;
+	int numofdata = 100;
 	double *a;
 	double *a_old;
 	a= new double [numofdata];
@@ -73,15 +74,16 @@ int main(int argc, char** argv)
 
 	// read in data
 	printf("The data point coordinates are:\n");
-	read_X("generate_data/dataset_15.txt", x);
+	read_X("generate_data/x.txt", x);
 	printf("The data point labels are:\n");
- 	read_Y("generate_data/dataset_15_label.txt", y);
+ 	read_Y("generate_data/x_label.txt", y);
 
  	// solve the optimazation problem, the loop stops while a doesn't change 
 	while(passes <max_passes)
 	{	
 		int num_changed_alphas = 0;
 
+		
 		for( i =0;i<numofdata;i++)
 		{	
 			E[i] = f_x( i,x,y,a,b) - y[i];
@@ -155,15 +157,27 @@ int main(int argc, char** argv)
 	cout<<w_svm[0]<<' '<<w_svm[1]<<endl;
 
 	//Compute b
-
+	printf("\nThe calculated b is:\n");
 	cout<< b <<endl;
+
+	// The values of support vector
+	printf("\nThe calculated values of support vector are:\n");
+	double result[numofdata];
+	for(i= 0;i<numofdata;i++)
+	{
+		if(a[i]!=0)
+		{
+			result[i] = w_svm[0]*x[i][0]+w_svm[1]*x[i][1]+b;
+			cout<<result[i]<<" ";
+		}
+	}
 
 	return 0;
 }
 
 // Compute f(x) dual problem
 double f_x(int j, double** x, double* y, double* alpha, double b){
- int m = 15;
+ int m = 100;
  double sum = 0;
  for (int i = 0; i < m; i++){
   sum += alpha[i] * y[i] * dot_product(x,i,j);
@@ -287,12 +301,12 @@ void read_X(string x_file, double** x){
  string line;
  ifstream input(x_file);
  int i = 0;
-    for  (int i = 0; i < 15; i++)
+    for  (int i = 0; i < 100; i++)
     {
         double x1, x2;
         char separator;
         cout<<i<<" ";
-        input >> x1  >> x2;
+        input >> x1  >>separator>> x2;
         x[i][0] = x1;
         x[i][1] = x2;
         cout << x[i][0] << ", " << x[i][1] << endl;
@@ -303,7 +317,7 @@ void read_Y(string y_file, double* y){
  string line;
  ifstream input(y_file);
  int i = 0;
-    for  (int i = 0; i < 15; i++)
+    for  (int i = 0; i < 100; i++)
     {
         double y1;
         char separator;
